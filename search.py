@@ -94,30 +94,28 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
     """
     frontier = util.Stack()
+    frontierSet = set()
     startState = problem.getStartState()
     if problem.isGoalState(startState):
         return []
     frontier.push(Node(startState, []))
     explored = set()
-    frontierSet = set()
-    frontierSet.add(startState)
-
+    explored.add(startState)
     while not frontier.isEmpty():
         # print "FRONTIER IS", frontier
         curNode = frontier.pop()
-        frontierSet.remove(curNode.state)
-        if problem.isGoalState(curNode.state):
-            return curNode.partialPath
-        explored.add(curNode.state)
         # print "successors are ", problem.getSuccessors(curNode.state)
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
-            print successor
+            if (successor in explored) or (successor in frontierSet):
+                continue
             newpath = list(curNode.partialPath)
             newpath.append(action)
+            if problem.isGoalState(successor):
+                return newpath
             # print "added a new path", newpath
             frontier.push(Node(successor, newpath))
-            frontierSet.add(successor)
+            explored.add(successor)
 
     raise Exception("THERE IS NO RESULTS") #need to find something to return
 

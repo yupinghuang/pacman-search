@@ -19,6 +19,17 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+class Node:
+    """
+    This class is the node data structure for a search problem. It holds the
+    current state, its parent and the cost of the action done from the
+    last state.
+    """
+    def __init__(self, state, partialPath):
+        self.state = state
+        self.partialPath = partialPath
+
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -81,13 +92,43 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
+    """
+    frontier = util.Stack()
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    frontier.push(Node(startState, []))
+    explored = set()
+    frontierSet = set()
+    frontierSet.add(startState)
 
+    while not frontier.isEmpty():
+        # print "FRONTIER IS", frontier
+        curNode = frontier.pop()
+        frontierSet.remove(curNode.state)
+        explored.add(curNode)
+        # print "successors are ", problem.getSuccessors(curNode.state)
+        for s in problem.getSuccessors(curNode.state):
+            successor, action, cost = s
+            if (successor not in explored) and (successor not in frontierSet):
+                newpath = list(curNode.partialPath)
+                newpath.append(action)
+                if problem.isGoalState(successor):
+                    return newpath
+                else:
+                    # print "added a new path", newpath
+                    frontier.push(Node(successor, newpath))
+                    frontierSet.add(successor)
+
+    raise Exception("THERE IS NO RESULTS") #need to find something to return
+
+    """
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # "*** YOUR CODE HERE ***"
+    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Your BFS implementation goes here. Like for DFS, your 

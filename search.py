@@ -25,9 +25,10 @@ class Node:
     current state, its parent and the cost of the action done from the
     last state.
     """
-    def __init__(self, state, partialPath):
+    def __init__(self, state, partialPath, cost=None):
         self.state = state
         self.partialPath = partialPath
+        self.cost = cost
 
 
 class SearchProblem:
@@ -99,8 +100,6 @@ def depthFirstSearch(problem):
         return []
     frontier.push(Node(startState, []))
     explored = set()
-    frontierSet = set()
-    frontierSet.add(startState)
 
     while not frontier.isEmpty():
         # print "FRONTIER IS", frontier
@@ -117,7 +116,6 @@ def depthFirstSearch(problem):
                 else:
                     # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
-                    frontierSet.add(successor)
 
     raise Exception("THERE IS NO RESULTS") #need to find something to return
 
@@ -127,15 +125,12 @@ def breadthFirstSearch(problem):
     search algorithm needs to return a list of actions that 
     reaches the goal.
     """
-    "*** YOUR CODE HERE ***"
     frontier = util.Queue()
     startState = problem.getStartState()
     if problem.isGoalState(startState):
         return []
     frontier.push(Node(startState, []))
     explored = set()
-    frontierSet = set()
-    frontierSet.add(startState)
 
     while not frontier.isEmpty():
         # print "FRONTIER IS", frontier
@@ -152,14 +147,34 @@ def breadthFirstSearch(problem):
                 else:
                     # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
-                    frontierSet.add(successor)
 
 def uniformCostSearch(problem):
     """Your UCS implementation goes here. Like for DFS, your 
     search algorithm needs to return a list of actions that 
     reaches the goal.
     """
-    util.raiseNotDefined()
+    frontier = util.PriorityQueue()
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    frontier.push(Node(startState, [], cost=0), 0)
+    explored = set()
+
+    while not frontier.isEmpty():
+        # print "FRONTIER IS", frontier
+        curNode = frontier.pop()
+        if (curNode.state in explored):
+            continue
+        explored.add(curNode.state)
+        if problem.isGoalState(curNode.state):
+            return curNode.partialPath
+        # print "successors are ", problem.getSuccessors(curNode.state)
+        for s in problem.getSuccessors(curNode.state):
+            successor, action, cost = s
+            if (successor not in explored):
+                newpath = list(curNode.partialPath)
+                newpath.append(action)
+                frontier.push(Node(successor, newpath, cost+curNode.cost), cost+curNode.cost)
 
 def nullHeuristic(state, problem=None):
     """

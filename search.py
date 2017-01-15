@@ -140,6 +140,7 @@ def breadthFirstSearch(problem):
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
             if (successor not in explored):
+                explored.add(successor)
                 newpath = list(curNode.partialPath)
                 newpath.append(action)
                 if problem.isGoalState(successor):

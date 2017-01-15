@@ -148,6 +148,8 @@ def breadthFirstSearch(problem):
                     # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
 
+    raise Exception("THERE IS NO RESULTS")  # need to find something to return
+
 def uniformCostSearch(problem):
     """Your UCS implementation goes here. Like for DFS, your 
     search algorithm needs to return a list of actions that 
@@ -176,6 +178,8 @@ def uniformCostSearch(problem):
                 newpath.append(action)
                 frontier.push(Node(successor, newpath, cost+curNode.cost), cost+curNode.cost)
 
+    raise Exception("THERE IS NO RESULTS")  # need to find something to return
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -191,8 +195,32 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     in "nullHeuristic", above.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.PriorityQueue()
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+    startHeuristic = heuristic(startState, problem)
+    frontier.push(Node(startState, [], cost=0), startHeuristic)
+    explored = set()
 
+    while not frontier.isEmpty():
+        # print "FRONTIER IS", frontier
+        curNode = frontier.pop()
+        if (curNode.state in explored):
+            continue
+        explored.add(curNode.state)
+        if problem.isGoalState(curNode.state):
+            return curNode.partialPath
+        # print "successors are ", problem.getSuccessors(curNode.state)
+        for s in problem.getSuccessors(curNode.state):
+            successor, action, cost = s
+            if (successor not in explored):
+                newpath = list(curNode.partialPath)
+                newpath.append(action)
+                currentHeuristic = heuristic(successor, problem)
+                frontier.push(Node(successor, newpath, cost + curNode.cost),
+                              cost + curNode.cost + currentHeuristic)
+    raise Exception("THERE IS NO RESULTS")  # need to find something to return
 
 # Abbreviations
 bfs = breadthFirstSearch

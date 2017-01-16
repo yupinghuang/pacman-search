@@ -135,12 +135,14 @@ def breadthFirstSearch(problem):
     while not frontier.isEmpty():
         # print "FRONTIER IS", frontier
         curNode = frontier.pop()
+        if curNode.state in explored:
+            continue
         explored.add(curNode.state)
         # print "successors are ", problem.getSuccessors(curNode.state)
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
             if (successor not in explored):
-                explored.add(successor)
+                # explored.add(successor)
                 newpath = list(curNode.partialPath)
                 newpath.append(action)
                 if problem.isGoalState(successor):

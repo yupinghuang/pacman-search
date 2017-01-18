@@ -391,10 +391,10 @@ def cornersHeuristic(state, problem):
         width = mazeWidth
     """
     heuristicValue = 0
-    counter = 0
+    # counter = 0
     for i, touched in enumerate(cornersTouched):
         if not touched:
-            counter = counter + 1
+            # counter = counter + 1
             manhattan = manhattanDistance(position, corners[i])
             if heuristicValue<manhattan or heuristicValue==0:
                 heuristicValue = manhattan
@@ -411,6 +411,7 @@ def cornersHeuristic(state, problem):
         # HeuristicValue += 1
     return 0
 """
+
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
@@ -502,8 +503,38 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    foodList = foodGrid.asList()
     "*** YOUR CODE HERE ***"
-    return 0
+    heuristicValue = 0
+
+    # # version I
+    # leftBottom = position
+    # print leftBottom == position
+    # rightTop = position
+    # for foodPosition in foodList:
+    #     currentFoodX, currentFoodY = foodPosition
+    #     if foodGrid[currentFoodX][currentFoodY]:
+    #         if currentFoodX < leftBottom[0] and currentFoodY < leftBottom[1]:
+    #             leftBottom = (currentFoodX, currentFoodY)
+    #             print "leftBottom is", leftBottom
+    #         elif currentFoodX > rightTop[0] and currentFoodY > rightTop[1]:
+    #             rightTop = (currentFoodX, currentFoodY)
+    #             print "rightTop is", rightTop
+    #
+    # heuristicValue = manhattanDistance(position, leftBottom) + manhattanDistance(position, rightTop)
+    # # if heuristicValue < manhattan or heuristicValue == 0:
+    # #     heuristicValue = manhattan
+    # return heuristicValue
+
+    #version II
+    for foodPosition in foodList:
+        currentFoodX, currentFoodY = foodPosition
+        if foodGrid[currentFoodX][currentFoodY]:
+            manhattan = manhattanDistance(position, foodPosition)
+            if heuristicValue<manhattan or heuristicValue==0:
+                heuristicValue = manhattan
+    return heuristicValue
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

@@ -377,14 +377,40 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    # TODO THINK ABOUT DIS
     position, cornersTouched = state
     corners = problem.corners
-    manhattan = 0
+    """
+    mazeHeight = problem.walls.height-2
+    mazeWidth = problem.walls.width-2
+    if mazeHeight > mazeWidth:
+        width = mazeHeight
+        height = mazeWidth
+    else:
+        height = mazeHeight
+        width = mazeWidth
+    """
+    heuristicValue = 0
+    counter = 0
     for i, touched in enumerate(cornersTouched):
         if not touched:
-            manhattan += manhattanDistance(corners[i], position)
-    return manhattan/2
-
+            counter = counter + 1
+            manhattan = manhattanDistance(position, corners[i])
+            if heuristicValue<manhattan or heuristicValue==0:
+                heuristicValue = manhattan
+    return heuristicValue
+    """
+    if counter == 4:
+        heuristicValue += 2*height + width
+    elif counter == 3:
+        heuristicValue += height + width
+    elif counter == 2:
+        heuristicValue += width
+    elif counter == 1:
+        pass
+        # HeuristicValue += 1
+    return 0
+"""
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):

@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        # NOTHING ADDED
 
     def getStartState(self):
         """
@@ -336,7 +337,7 @@ class CornersProblem(search.SearchProblem):
             if not hitsWall:
                 # Copy the cornerTouched tuple to a mutable list.
                 nextCornerTouched = [ w for w in state[1]]
-                # Generate the next state
+                # Generate the next state (nextPosition, nextCornerTouched)
                 for i, corner in enumerate(self.corners):
                     if (nextx, nexty) == corner:
                         nextCornerTouched[i] = True
@@ -386,6 +387,9 @@ def cornersHeuristic(state, problem):
     """ Heuristic: maximum Manhattan distance between the position
     and any untouched corner.
     Return 0 if all corners are touched.
+    It is the lower bound of the cost to get to the farthest corner. Therefore
+    it underestimates the total cost to get to all corners.
+    Hence it is admissible and most likely consistent.
     """
     position, cornersTouched = state
     corners = problem.corners
@@ -515,6 +519,7 @@ def foodHeuristic(state, problem):
         maxY = maxY if (maxY>=currFoodY) else currFoodY
     heuristicValue = (_manhattanDistance(position, (maxX, maxY)) +
         _manhattanDistance(position, (minX,minY)))
+    heuristicValue = _manhattanDistance((minX, minY), (maxX, maxY))
     return heuristicValue
 
 class ClosestDotSearchAgent(SearchAgent):

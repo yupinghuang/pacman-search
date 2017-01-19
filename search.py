@@ -85,11 +85,6 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem):
     """
-    Your DFS implementation goes here
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
     DFS graph search implementation with goal check before
     putting a node on the frontier.
     """
@@ -117,9 +112,8 @@ def depthFirstSearch(problem):
 
 
 def breadthFirstSearch(problem):
-    """Your BFS implementation goes here. Like for DFS, your 
-    search algorithm needs to return a list of actions that 
-    reaches the goal.
+    """BFS graph search implementation. Check goal state before
+    putting a node on the frontier.
     """
     frontier = util.Queue()
     startState = problem.getStartState()
@@ -129,47 +123,38 @@ def breadthFirstSearch(problem):
     explored = set()
 
     while not frontier.isEmpty():
-        # print "FRONTIER IS", frontier
         curNode = frontier.pop()
         if curNode.state in explored:
             continue
         explored.add(curNode.state)
-        # print "successors are ", problem.getSuccessors(curNode.state)
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
             if (successor not in explored):
-                # explored.add(successor)
                 newpath = list(curNode.partialPath)
                 newpath.append(action)
                 if problem.isGoalState(successor):
                     return newpath
                 else:
-                    # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
 
     raise Exception("THERE IS NO RESULTS")
 
 def uniformCostSearch(problem):
-    """Your UCS implementation goes here. Like for DFS, your 
-    search algorithm needs to return a list of actions that 
-    reaches the goal.
+    """UCS graph search implementaion. Goal test on removal
+    from frontier.
     """
     frontier = util.PriorityQueue()
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
     frontier.push(Node(startState, [], cost=0), 0)
     explored = set()
 
     while not frontier.isEmpty():
-        # print "FRONTIER IS", frontier
         curNode = frontier.pop()
         if (curNode.state in explored):
             continue
         explored.add(curNode.state)
         if problem.isGoalState(curNode.state):
             return curNode.partialPath
-        # print "successors are ", problem.getSuccessors(curNode.state)
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
             if (successor not in explored):
@@ -187,17 +172,12 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Your A* implementation goes here. Like for DFS, your 
-    search algorithm needs to return a list of actions that 
-    reaches the goal. heueristic is a heuristic function - 
-    you can see an example of the arguments and return type
-    in "nullHeuristic", above.
+    """A* search implementation. Goal check on removal
+    from the frontier.
     """
     "*** YOUR CODE HERE ***"
     frontier = util.PriorityQueue()
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
     startHeuristic = heuristic(startState, problem)
     frontier.push(Node(startState, [], cost=0), startHeuristic)
     explored = set()

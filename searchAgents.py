@@ -295,6 +295,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        # Four corner untouched, state is a tuple encoding position and if
+        # each of the four corners is touched.
         cornerTouched = (False, False, False, False)
         return (self.startingPosition, cornerTouched)
 
@@ -303,7 +305,9 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        if False in state[1]:
+        # If any corner is untouched, return False
+        cornerTouched = state[1]
+        if False in cornerTouched:
             return False
         else:
             return True
@@ -330,7 +334,9 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
             "*** YOUR CODE HERE ***"
             if not hitsWall:
+                # Copy the cornerTouched tuple to a mutable list.
                 nextCornerTouched = [ w for w in state[1]]
+                # Generate the next state
                 for i, corner in enumerate(self.corners):
                     if (nextx, nexty) == corner:
                         nextCornerTouched[i] = True
@@ -352,7 +358,7 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-def manhattanDistance(a, b):
+def _manhattanDistance(a, b):
     """ Manhattan distance between
     two points a, b represented as tuples
     """
@@ -377,40 +383,20 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    # TODO THINK ABOUT DIS
+    """ Heuristic: maximum Manhattan distance between the position
+    and any untouched corner.
+    Return 0 if all corners are touched.
+    """
     position, cornersTouched = state
     corners = problem.corners
-    """
-    mazeHeight = problem.walls.height-2
-    mazeWidth = problem.walls.width-2
-    if mazeHeight > mazeWidth:
-        width = mazeHeight
-        height = mazeWidth
-    else:
-        height = mazeHeight
-        width = mazeWidth
-    """
     heuristicValue = 0
-    # counter = 0
     for i, touched in enumerate(cornersTouched):
         if not touched:
             # counter = counter + 1
-            manhattan = manhattanDistance(position, corners[i])
+            manhattan = _manhattanDistance(position, corners[i])
             if heuristicValue<manhattan or heuristicValue==0:
                 heuristicValue = manhattan
     return heuristicValue
-    """
-    if counter == 4:
-        heuristicValue += 2*height + width
-    elif counter == 3:
-        heuristicValue += height + width
-    elif counter == 2:
-        heuristicValue += width
-    elif counter == 1:
-        pass
-        # HeuristicValue += 1
-    return 0
-"""
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -507,34 +493,29 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     heuristicValue = 0
 
-    # # version I
-    # leftBottom = position
-    # print leftBottom == position
-    # rightTop = position
+    #version II
     # for foodPosition in foodList:
     #     currentFoodX, currentFoodY = foodPosition
     #     if foodGrid[currentFoodX][currentFoodY]:
-    #         if currentFoodX < leftBottom[0] and currentFoodY < leftBottom[1]:
-    #             leftBottom = (currentFoodX, currentFoodY)
-    #             print "leftBottom is", leftBottom
-    #         elif currentFoodX > rightTop[0] and currentFoodY > rightTop[1]:
-    #             rightTop = (currentFoodX, currentFoodY)
-    #             print "rightTop is", rightTop
-    #
-    # heuristicValue = manhattanDistance(position, leftBottom) + manhattanDistance(position, rightTop)
-    # # if heuristicValue < manhattan or heuristicValue == 0:
-    # #     heuristicValue = manhattan
+    #         manhattan = _manhattanDistance(position, foodPosition)
+    #         if heuristicValue<manhattan or heuristicValue==0:
+    #             heuristicValue = manhattan
     # return heuristicValue
 
-    #version II
+    # version III
+    # how far the farthest foods are in each direction (-x,-y,+x,+y)
+    # from the position of the pacman
+    minX, minY = position
+    maxX, maxY = position
     for foodPosition in foodList:
-        currentFoodX, currentFoodY = foodPosition
-        if foodGrid[currentFoodX][currentFoodY]:
-            manhattan = manhattanDistance(position, foodPosition)
-            if heuristicValue<manhattan or heuristicValue==0:
-                heuristicValue = manhattan
+        currFoodX, currFoodY = foodPosition
+        minX = minX if (minX<=currFoodX) else currFoodX
+        maxX = maxX if (maxX>=currFoodX) else currFoodX
+        minY = minY if (minY<=currFoodY) else currFoodY
+        maxY = maxY if (maxY>=currFoodY) else currFoodY
+    heuristicValue = (_manhattanDistance(position, (maxX, maxY)) +
+        _manhattanDistance(position, (minX,minY)))
     return heuristicValue
-
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

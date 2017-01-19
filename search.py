@@ -21,9 +21,8 @@ import util
 
 class Node:
     """
-    This class is the node data structure for a search problem. It holds the
-    current state, its parent and the cost of the action done from the
-    last state.
+    The node data structure for a search problem. It holds the
+    current state, partial path and the cumulative cost.
     """
     def __init__(self, state, partialPath, cost=None):
         self.state = state
@@ -91,8 +90,8 @@ def depthFirstSearch(problem):
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+    DFS graph search implementation with goal check before
+    putting a node on the frontier.
     """
     frontier = util.Stack()
     startState = problem.getStartState()
@@ -102,10 +101,8 @@ def depthFirstSearch(problem):
     explored = set()
 
     while not frontier.isEmpty():
-        # print "FRONTIER IS", frontier
         curNode = frontier.pop()
         explored.add(curNode.state)
-        # print "successors are ", problem.getSuccessors(curNode.state)
         for s in problem.getSuccessors(curNode.state):
             successor, action, cost = s
             if (successor not in explored):
@@ -114,10 +111,9 @@ def depthFirstSearch(problem):
                 if problem.isGoalState(successor):
                     return newpath
                 else:
-                    # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
 
-    raise Exception("THERE IS NO RESULTS") #need to find something to return
+    raise Exception("THERE IS NO RESULTS")
 
 
 def breadthFirstSearch(problem):
@@ -151,7 +147,7 @@ def breadthFirstSearch(problem):
                     # print "added a new path", newpath
                     frontier.push(Node(successor, newpath))
 
-    raise Exception("THERE IS NO RESULTS")  # need to find something to return
+    raise Exception("THERE IS NO RESULTS")
 
 def uniformCostSearch(problem):
     """Your UCS implementation goes here. Like for DFS, your 
@@ -181,7 +177,7 @@ def uniformCostSearch(problem):
                 newpath.append(action)
                 frontier.push(Node(successor, newpath, cost+curNode.cost), cost+curNode.cost)
 
-    raise Exception("THERE IS NO RESULTS")  # need to find something to return
+    raise Exception("THERE IS NO RESULTS")
 
 def nullHeuristic(state, problem=None):
     """
@@ -207,7 +203,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     explored = set()
 
     while not frontier.isEmpty():
-        # print "FRONTIER IS", frontier
         curNode = frontier.pop()
         if (curNode.state in explored):
             continue
@@ -223,7 +218,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 currentHeuristic = heuristic(successor, problem)
                 frontier.push(Node(successor, newpath, cost + curNode.cost),
                               cost + curNode.cost + currentHeuristic)
-    raise Exception("THERE IS NO RESULTS")  # need to find something to return
+    raise Exception("THERE IS NO RESULTS")
 
 # Abbreviations
 bfs = breadthFirstSearch

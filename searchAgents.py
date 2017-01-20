@@ -495,20 +495,27 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     foodList = foodGrid.asList()
     "*** YOUR CODE HERE ***"
+    """ Heuristic: sum of absolute value of the four extreme values of the coordinates of all
+    the food (leftmost ,rightmost, uppermost, lowermost) relative to the position of the
+    pacman.
+    It is admissible because the pacman will have to reach each of those corners (if they exist)
+    and the optimal cost of get to all of them is smaller than only taking one of the coordinates
+    of each of the food. Note that if all of the food is on the same side (say to the left) of the pacman, then
+    the following only minX and keep maxX at position and hence the above argument still holds.
+    In short, if the pacman can split itself into four parts at some optimal point, this would be the cost
+    when there are no barriers.
+    Consistency: before the pacman reaches a corner, the heuristic does not change. Hence it is consistent
+    for actions that do not reach a corner. As the pacman reaches one corner (say maxY), before it reaches it (denote A)
+    h(A) = |minX-AX| + |minY-AY| + |maxX-AX| + 1;
+    after it reaches it (B) (say it moved right)
+    h(B) = |minX-AX| + |minY-AY| +1 + |maxX-AX|
+    the cost of action c(A,B)=1.
+    Hence
+    h(A)<=h(B) + cost(A,B) = h(A) + 1
+    holds.
+    """
     heuristicValue = 0
 
-    #version II
-    # for foodPosition in foodList:
-    #     currentFoodX, currentFoodY = foodPosition
-    #     if foodGrid[currentFoodX][currentFoodY]:
-    #         manhattan = _manhattanDistance(position, foodPosition)
-    #         if heuristicValue<manhattan or heuristicValue==0:
-    #             heuristicValue = manhattan
-    # return heuristicValue
-
-    # version III
-    # how far the farthest foods are in each direction (-x,-y,+x,+y)
-    # from the position of the pacman
     minX, minY = position
     maxX, maxY = position
     for foodPosition in foodList:
@@ -519,7 +526,6 @@ def foodHeuristic(state, problem):
         maxY = maxY if (maxY>=currFoodY) else currFoodY
     heuristicValue = (_manhattanDistance(position, (maxX, maxY)) +
         _manhattanDistance(position, (minX,minY)))
-    heuristicValue = _manhattanDistance((minX, minY), (maxX, maxY))
     return heuristicValue
 
 class ClosestDotSearchAgent(SearchAgent):

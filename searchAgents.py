@@ -386,10 +386,19 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     """ Heuristic: maximum Manhattan distance between the position
     and any untouched corner.
-    Return 0 if all corners are touched.
-    It is the lower bound of the cost to get to the farthest corner. Therefore
-    it underestimates the total cost to get to all corners.
-    Hence it is admissible and most likely consistent.
+
+    Admissibility:
+    Return 0 if all corners are touched(goal state) or the lower bound of the cost to get to the farthest corner.
+    Therefore it would never exceed the true total cost to get to all corners, which makes it admissible.
+
+    Consistency:
+    It is consistent.
+    First suppose that it is not consistent, and there definitely exist two states A and B where h(A) is bigger than
+    true cost of A to B plus h(B). But h(A), h(B) is the Manhattan distance to the furthest corner, and true cost of A
+    to B would be at least Manhattan distance between A and B. Therefore, even if A,B,further corner are on the same line,
+    h(A) = cost(A to B) + h(B). And other cases, h(A) < cost(A to B) + h(B). Contradiction. Therefore, it is consistent.
+
+
     """
     position, cornersTouched = state
     corners = problem.corners
